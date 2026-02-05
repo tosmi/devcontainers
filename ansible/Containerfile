@@ -1,0 +1,37 @@
+FROM registry.redhat.io/ansible-automation-platform-26/ansible-dev-tools-rhel9:latest
+
+ARG USERNAME=podman
+ARG USERID=1000
+ARG GROUPID=1000
+
+ARG ANSIBLE_GALAXY_SERVER_AUTOMATION_HUB_TOKEN
+ENV ANSIBLE_GALAXY_SERVER_AUTOMATION_HUB_VALIDATED_TOKEN=$ANSIBLE_GALAXY_SERVER_AUTOMATION_HUB_TOKEN
+
+ENV ANSIBLE_GALAXY_SERVER_LIST=automation_hub,automation_hub_validated,release_galaxy
+ENV ANSIBLE_GALAXY_SERVER_AUTOMATION_HUB_URL=https://console.redhat.com/api/automation-hub/content/published
+ENV ANSIBLE_GALAXY_SERVER_AUTOMATION_HUB_VALIDATED_URL=https://console.redhat.com/api/automation-hub/content/validated
+
+ENV ANSIBLE_GALAXY_SERVER_AUTOMATION_HUB_AUTH_URL=https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+ENV ANSIBLE_GALAXY_SERVER_AUTOMATION_HUB_VALIDATED_AUTH_URL=https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+
+ENV ANSIBLE_GALAXY_SERVER_RELEASE_GALAXY_URL=https://galaxy.ansible.com
+
+# the default container user is root, but HOME is set to /home/runner
+# this confuses ansible, and me...
+ENV ANSIBLE_ASYNC_DIR=/tmp/ansible_async
+
+USER root
+
+COPY requirements.yaml .
+RUN ansible-galaxy collection install -r requirements.yaml
+
+RUN microdnf install -y sudo findutils procps-ng && microdnf clean all
+RUN usermod -aG wheel podman
+
+# Allow wheel to perform sudo actions with no password
+RUN sed -e 's/^%wheel/#%wheel/g' -e 's/^# %wheel/%wheel/g' -i /etc/sudoers
+
+RUN mkdir /commandhistory \
+    && touch /commandhistory/.bash_history \
+    && chown -R $USERNAME /commandhistory \
+    && echo "HISTFILE=/commandhistory/.zsh_history" >> "${HOME}/.zshrc"
