@@ -27,3 +27,7 @@ collections:
   - name: infra.ah_configuration
     version: 2.1.0
     source: https://console.redhat.com/api/automation-hub/content/validated
+
+  - name: community.general
+    version: 12.3.0
+    source: https://galaxy.ansible.com
