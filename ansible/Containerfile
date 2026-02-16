@@ -22,8 +22,11 @@ ENV ANSIBLE_ASYNC_DIR=/tmp/ansible_async
 
 USER root
 
+COPY requirements.txt .
+RUN pip3 install -r requirements.txt
+
 COPY requirements.yaml .
-RUN ansible-galaxy collection install -r requirements.yaml
+RUN ansible-galaxy collection install -v -p /usr/share/ansible/collections -r requirements.yaml
 
 RUN microdnf install -y sudo findutils procps-ng && microdnf clean all
 RUN usermod -aG wheel podman

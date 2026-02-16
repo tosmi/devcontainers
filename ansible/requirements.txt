@@ -1,0 +1,5 @@
+# copied from https://github.com/ansible-collections/kubernetes.core/blob/main/requirements.txt
+#
+kubernetes>=24.2.0
+requests-oauthlib
+jsonpatch
