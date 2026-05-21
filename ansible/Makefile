@@ -1,4 +1,4 @@
-VERSION := v1.2
+VERSION := v1.3
 
 TOKEN := $(shell awk -F=  '/token=ey/ { printf("%s",$$2) }'  ~/.ansible.cfg)
 IMAGE := quay.io/tosmi/ansible-dev-container
