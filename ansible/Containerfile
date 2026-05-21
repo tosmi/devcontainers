@@ -22,6 +22,18 @@ ENV ANSIBLE_ASYNC_DIR=/tmp/ansible_async
 
 USER root
 
+#
+# Setup opencode
+#
+RUN curl -fsSL https://opencode.ai/install | bash
+
+#
+# Setup OC client (ARM only currently)
+#
+RUN ( cd /tmp \
+    && curl -fLO https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux-arm64-rhel9.tar.gz \
+    && tar -C /usr/local/bin xvf /tmp/openshift-client-linux-arm64-rhel9.tar.gz )
+
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
