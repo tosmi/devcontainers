@@ -1,5 +1,7 @@
 FROM registry.redhat.io/ansible-automation-platform-26/ansible-dev-tools-rhel9:latest
 
+ARG TARGETPLATFORM
+
 ARG USERNAME=podman
 ARG USERID=1000
 ARG GROUPID=1000
