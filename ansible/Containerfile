@@ -1,10 +1,14 @@
-FROM registry.redhat.io/ansible-automation-platform-26/ansible-dev-tools-rhel9:latest
+# FROM registry.redhat.io/ansible-automation-platform-26/ansible-dev-tools-rhel9:latest
+FROM ghcr.io/ansible/community-ansible-dev-tools:latest
+
+LABEL maintainer="toni@stderr.at" \
+  at.stderr.container="ansible-dev-tools"
 
 ARG TARGETPLATFORM
 
-ARG USERNAME=podman
-ARG USERID=1000
-ARG GROUPID=1000
+# ARG USERNAME=podman
+# ARG USERID=1000
+# ARG GROUPID=1000
 
 ARG ANSIBLE_GALAXY_SERVER_AUTOMATION_HUB_TOKEN
 ARG ANSIBLE_GALAXY_SERVER_AUTOMATION_HUB_VALIDATED_TOKEN
@@ -56,12 +60,13 @@ COPY requirements.yaml .
 RUN ansible-galaxy collection install -v -p /usr/share/ansible/collections -r requirements.yaml
 
 RUN microdnf install -y sudo findutils procps-ng && microdnf clean all
-RUN usermod -aG wheel podman
+
+# RUN usermod -aG wheel podman
 
 # Allow wheel to perform sudo actions with no password
 RUN sed -e 's/^%wheel/#%wheel/g' -e 's/^# %wheel/%wheel/g' -i /etc/sudoers
 
 RUN mkdir /commandhistory \
     && touch /commandhistory/.bash_history \
-    && chown -R $USERNAME /commandhistory \
+    && chown -R root /commandhistory \
     && echo "HISTFILE=/commandhistory/.zsh_history" >> "${HOME}/.zshrc"
