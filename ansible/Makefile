@@ -9,6 +9,10 @@ all:
 	@echo TOKEN: $(TOKEN)
 	@echo CONTAINER: $(CONTAINER)
 
+.PHONY: clean
+clean:
+	podman manfiest remove $(CONTAINER)
+
 .PHONY: container
 container: ## Build the container image
 	podman manifest exists $(CONTAINER) || podman manifest create $(CONTAINER)
